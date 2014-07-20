@@ -9,5 +9,5 @@ author:
   email:      ''
 markdown:     rdiscount
 permalink:    pretty
-pygments:     true
+highlighter:  rouge
 paginate:     2
