@@ -6,7 +6,7 @@ comments: true
 tags: [scala, hbase, asynchbase]
 ---
 
-I was looking for a way to do non-blocking recursive scans on HBase in Scala using the excellent [asynchbase Java library](https://github.com/OpenTSDB/asynchbase). I wanted to create Scala Futures from the Deferred that asynchbase returns as Futures are much easier to work in Scala. Following is what I came up with, its not perfect and lacks a lot of error handling. It is inspired by the follwing [gist](https://gist.github.com/tsuna/5480390)
+I was looking for a way to do non-blocking recursive scans on HBase in Scala using the excellent [asynchbase Java library](https://github.com/OpenTSDB/asynchbase). I wanted to create Scala Futures from the Deferred that asynchbase returns as Futures are much easier to work with in Scala. Following is what I came up with, its not perfect and lacks a lot of error handling. It is inspired by the follwing [gist](https://gist.github.com/tsuna/5480390)
 
 To keep the example simple I am going to assume that we are only interested in returning the keys of our hbase table.
 
@@ -81,4 +81,5 @@ val fut = promise.future
 
 // use the future and profit !
 {%endhighlight%}
+
 
