@@ -5,7 +5,7 @@ comments: true
 tags: [scala, async, future]
 ---
 
-Note that this by no means an exhaustive list of ways in which Futures can be combined and how Error handling should be done when using Scala Futures. But I will cover some of the useful ones that I have encountered and use in my code.
+In this post I will discuss some of the useful Futures combinators and ways to handle errors when working with Futures. Note that whenever I use the word `wait` it does not mean `block`. block means blocking a thread and wait in the following discussion refers to waiting for an async computation to finish without blocking a thread.
 
 For this post I am going to use a small Ecommerce website example. Following is the API and the case classes for the domain objects. I am not going to discuss any concrete implementation of the following API, we only need to be concerned about using this API and play with Future transformation and composition.
 
@@ -77,7 +77,7 @@ val inventory: Future[Inventory] = product flatMap { p =>
 }
 {%endhighlight%}
 
-This way we have composed two Future returning functions in a series. Note that we have to use flatMap instead of map else we will end up with Future[Future[Product]]. Also if you want to compose a lot of Future returning functions then using the flatMap straight up could make the code look ugly and lead to so called `callback hell`. Following example demonstrates composing multiple future returning functions
+This way we have composed two Future returning functions in a series. Note that we have to use flatMap instead of map else we will end up with Future[Future[Product]]. Also if you want to compose a lot of Future returning functions then using the flatMap straight up could make the code look ugly and lead to so called `callback hell`. Using `for comprehension` helps in writing clean Future pipelines. Following example demonstrates composing multiple future returning functions using for comprehension.
 
 {%highlight scala linenos%} 
 val pAndI: Future[(Product, Inventory)] = for {
@@ -88,13 +88,64 @@ val pAndI: Future[(Product, Inventory)] = for {
 }
 {%endhighlight%}
 
-### 
+### flatMap equivalent using async & await
+{%highlight scala linenos%} 
+val pAndI: Future[(Product, Inventory)] = async {
+  val product   = await { getTopProduct }
+  val inventory = await { inventoryService.getInventory(product.id) }
+  (product, inventory)
+}
+{%endhighlight%}
+I do personally prefer the for comprehension over the async macro. Also the async macro has some [limitations](https://github.com/scala/async#limitations) that you should check out in case you run into problems. If you think the async macro makes the code easier to read, use it by all means.
 
-* composing with map
-* composing with flatMap
-* Converting Seq[Future[T]] to Future[Seq[T]]
+### Sequential execution of Futures vs Parallel execution
+The flatMap that we saw above executes the Futures in series. It waits for the getTopProduct() to complete before calling the getInventory() method. Lets now look at an example of executing Futures in parallel. Lets say we have a product and we want to get its metadata and inventory info in parallel.
+
+{%highlight scala linenos%} 
+val product: Product = ???
+val futureMetadata: Future[ProductMetadata] = getProductMetadata(product.id)
+val futureInventory: Future[Inventory] = getInventory(product.id)
+
+val mAndI: Future[(ProductMetadata, Inventory)] = for {
+  metadata  <- futureMetadata
+  inventory <- futureInventory
+} yield {
+  (metadata, inventory)
+}
+{%endhighlight%}
+The difference from before is that the calls that return the Futures are made outside the for comprehension so that they begin executing in parallel and inside the for comprehension we are waiting for the Futures to complete and then we yield the result tuple.
+
+### Converting multiple parallel Futures into one Future
+Sometimes when you spawn off multiple parallel Futures you want to convert all those Futures into a single Future on which you can put a single onComplete handler or combine it with yet other Futures. Lets say we have a list of product ids and we want to get inventory for each of the product ids in parallel and then print all the inventory information or print the exception message if the Future fails.
+
+{%highlight scala linenos%} 
+val productIds: Seq[String] = ???
+val seqOfFutureInventories: Seq[Future[Inventory]] = productIds map getInventory
+val futureOfInventories: Future[Seq[Inventory]] = Future.sequence(seqOfFutureInventories)
+futureOfInventories onComplete {
+  case Success(inventories) => inventories foreach println
+  case Failure(e) => println(s"Error : ${e.getMessage}")
+}
+{%endhighlight%}
+
+### Ordering completion handlers with andThen
+You could provide multiple onComplete handlers on Futures but the order in which they get executed is not guaranteed. When you want to provide multiple onComplete handlers and want to enforce an ordering of the executions of those handlers you should use the `andThen` combinator on Future objects.
+
+{%highlight scala linenos%} 
+val product: Future[Product] = ???
+product andThen {
+  case Success(p) => // do something with the product
+} andThen {
+  case Success(p) => // do yet another thing with the product
+  }
+{%endhighlight%}
+
+### Trans
+
+### Error handling using recover and recoverWith
+
 * using recover & recoverWith
 * using fallbackTo
 * Future.fromTry
-* andThen (multiple partial functions are executed in order so if you want to execute callbacks in order use this) 
-*  
+* transform
+* failed (failure projection)
