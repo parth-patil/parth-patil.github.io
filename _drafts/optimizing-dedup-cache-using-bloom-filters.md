@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Optimizing dedupe cache using bloom filters
+title: "Optimizing dedupe cache using bloom filters"
 comments: true
 tags: [scala, bloom-filter, data-structures, probablistic-data-structures]
 ---
@@ -19,3 +19,49 @@ My first attempt was to store the seen cache as concatenated md5 hashes of the u
 So after some thinking I realized that I needed a probablistic datastructure for checking set membership and that would allow me to configure the space vs accuracy tradeoff. For the seen cache we could tolerate false positives (i.e seen cache would tell that a url has been seen before when in fact it was not) but not false negatives. So for this use case the `Bloom Filter` fit the bill pretty well.
 
 So in the backend I decided to use the Bloom Filter implemented in Google Guava. The high level idea is to set the urlIds in the Bloom Filter and then get the underlying bit vector of the bloom filter, base64 encode it and then set it in the cookie. When the client sends back the cookie in the request we can follow a reverse process to reconstruct the Bloom Filter.
+
+Following is what the code looks like
+
+{%highlight scala linenos%}
+import org.apache.commons.codec.binary.Base64
+import java.security.MessageDigest
+import com.google.common.hash.{Funnels, BloomFilter}
+import java.io._
+
+class MyBloomFilter(bf: BloomFilter[Array[Byte]]) {
+  def this(numItems: Int, errorPercent: Double) = {
+    this(BloomFilter.create(Funnels.byteArrayFunnel, numItems, errorPercent))
+  }
+
+  private var cardinality = 0
+  val md5 = MessageDigest.getInstance("MD5")
+
+  def genHash(str: String): Array[Byte] = md5.digest(str.getBytes)
+
+  def size = cardinality
+
+  def put(item: String): Unit = {
+    bf.put(genHash(item))
+    cardinality += 1
+  }
+
+  def mightContain(item: String): Boolean = bf.mightContain(genHash(item))
+
+  def serializeToBase64(): String = {
+    val bs = new ByteArrayOutputStream
+    bf.writeTo(bs)
+    val bfByteArray = bs.toByteArray
+    bs.close()
+    Base64.encodeBase64String(bfByteArray)
+  }
+}
+
+object MyBloomFilter {
+  def fromBase64(serialized: String): MyBloomFilter = {
+    val bfByteArray = Base64.decodeBase64(serialized)
+    val inputStream = new ByteArrayInputStream(bfByteArray)
+    val bf = BloomFilter.readFrom(inputStream, Funnels.byteArrayFunnel)
+    new MyBloomFilter(bf)
+  }
+}
+{%endhighlight%}
