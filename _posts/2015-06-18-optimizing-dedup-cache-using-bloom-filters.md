@@ -8,7 +8,7 @@ I have been involved in an early stage product where in we recommend urls to use
 
 The straightforward thing to do is to store the seen cache on the backend in the form of a set that is keyed off of the userId. This cache could live in redis or memcache. But we are doing a proof of concept for our idea and didn't want to put in too much time in backend work upfront. So we decided to store the seen cache on the browser side. 
 
-First option we thought of was to store the seen cache in the `Local Storage` of the browser and that would have allowed us to store a lot of data on the client side. But this would mean that the browser would have to send the seen cache with every request for recommendations. We wanted to make the seen cache transparent to the client and in the future when we would build the distributed server side seen cache the client would not have to change. To that end we decided to store the seen cache in the browser cookie. The cookie travels back and fort between the server and client without the client having to do anything special.
+First option we thought of was to store the seen cache in the `Local Storage` of the browser and that would have allowed us to store a lot of data on the client side. But this would mean that the browser would have to send the seen cache with every request for recommendations. We wanted to make the seen cache transparent to the client and in the future when we would build the distributed server side seen cache the client would not have to change. To that end we decided to store the seen cache in the browser cookie. The cookie travels back and forth between the server and client without the client having to do anything special.
 
 But as you might have guessed when using browser cookie you get a very limited amount of storage per domain. As per the speck its 4k bytes per domain but can vary depending on the browser. Some browsers will allow bigger cookies. But at any rate its a very limited amount of storage given that you have to share this storage with other cookies in our domain.
 
@@ -65,3 +65,32 @@ object MyBloomFilter {
   }
 }
 {%endhighlight%}
+
+Following is example of how you would use it
+
+{%highlight scala linenos%}
+object BloomFilterTest extends App {
+  val myBloom = new MyBloomFilter(10, 0.01)
+  myBloom.put("http://www.google.com")
+  myBloom.put("http://www.yahoo.com")
+
+  val encodedStr = myBloom.serializeToBase64()
+  
+  // Recreate the Bloom Filter from the Base64 encoded string
+  val myBloom2 = MyBloomFilter.fromBase64(encodedStr)
+
+  println(s"google exits -> " + myBloom2.mightContain("http://www.google.com"))
+  println(s"yahoo exits -> " + myBloom2.mightContain("http://www.yahoo.com"))
+  println(s"microsoft exits -> " + myBloom2.mightContain("http://www.microsoft.com"))
+}
+{%endhighlight%}
+
+Following is what I get when I run it
+
+{%highlight bash linenos%}
+google exits -> true
+yahoo exits -> true
+microsoft exits -> false
+{%endhighlight%}
+
+This technique resulted in a huge saving in space. The original naive technique used would have required 32 * 100 = 3200 bytes. This new technique yields a base64 encoded string of just 168 bytes. Thats ~95% reduction in space!
