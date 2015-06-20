@@ -34,6 +34,7 @@ Following is the program to generate the random data
 {%highlight javascript linenos%} 
 import org.json4s._
 import org.json4s.jackson._
+import org.json4s.jackson.Serialization._
 
 import scala.util.Random
 
@@ -54,18 +55,52 @@ object SparkLambda extends App {
   implicit val formats = DefaultFormats
 
   def genFakeData(numRows: Int): Unit = {
-    def randomUrl: String = {
+    val countries = Array("CA", "CH", "GB", "IN", "AU", "ZB", "GE", "MX")
+    val countriesSize = countries.size
+
+    val browsers = Array("FF", "CH", "SF", "OP", "IE")
+    val browsersSize = browsers.size
+
+    def getRandomUrl: String = {
       val id = Random.nextInt(100)
       s"http://www.example.com/id=$id"
     }
 
-    var startTime: Long = 0
+    // Choose "US" with 50% probability
+    def getRandomCountry: String = {
+      if (Random.nextBoolean())
+        "US"
+      else {
+        val idx = Random.nextInt(countriesSize)
+        countries(idx)
+      }
+    }
+
+    def getRandomBrowser: String = {
+      val idx = Random.nextInt(browsersSize)
+      browsers(idx)
+    }
+
+    var currentTime: Long = 0
 
     for (i <- 0 to numRows) {
-      // Get random url
-      // Get random country
-      // Get random browser
+      val url = getRandomUrl
+      val country = getRandomCountry
+      val browser = getRandomBrowser
+
+      val row = Map(
+        "created" -> s"$currentTime",
+        "url" -> url,
+        "country" -> country,
+        "browser" -> browser
+      )
+
+      println(write(row))
+
+      currentTime += 1
     }
   }
+
+  genFakeData(100)
 }
 {%endhighlight%}
