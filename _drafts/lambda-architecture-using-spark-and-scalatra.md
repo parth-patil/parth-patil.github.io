@@ -29,78 +29,10 @@ I created a simple script to generate fake data. The data rows are in JSON forma
 }
 {%endhighlight%}
 
-Following is the program to generate the random data 
+I created a program to generate events for this example. It is a modification of [Page View Generator](https://github.com/apache/spark/blob/master/examples/src/main/scala/org/apache/spark/examples/streaming/clickstream/PageViewGenerator.scala) from Spark streaming examples. Checkout [my gist](https://gist.github.com/parth-patil/eb0816bfcc17f578273f) for the event generator. The event generator generates page view events that look as follows
 
-{%highlight javascript linenos%} 
-import org.json4s._
-import org.json4s.jackson._
-import org.json4s.jackson.Serialization._
-
-import scala.util.Random
-
-class SparkLambda {
-}
-
-/**
-{
-  "created": 1433262971414,
-  "url": "http://www.example.com/id=1",
-  "country": "US",
-  "browser": "FF"
-}
-*/
-case class LogLine(created: Long, url: String, country: String, browser: String)
-
-object SparkLambda extends App {
-  implicit val formats = DefaultFormats
-
-  def genFakeData(numRows: Int): Unit = {
-    val countries = Array("CA", "CH", "GB", "IN", "AU", "ZB", "GE", "MX")
-    val countriesSize = countries.size
-
-    val browsers = Array("FF", "CH", "SF", "OP", "IE")
-    val browsersSize = browsers.size
-
-    def getRandomUrl: String = {
-      val id = Random.nextInt(100)
-      s"http://www.example.com/id=$id"
-    }
-
-    // Choose "US" with 50% probability
-    def getRandomCountry: String = {
-      if (Random.nextBoolean())
-        "US"
-      else {
-        val idx = Random.nextInt(countriesSize)
-        countries(idx)
-      }
-    }
-
-    def getRandomBrowser: String = {
-      val idx = Random.nextInt(browsersSize)
-      browsers(idx)
-    }
-
-    var currentTime: Long = 0
-
-    for (i <- 0 to numRows) {
-      val url = getRandomUrl
-      val country = getRandomCountry
-      val browser = getRandomBrowser
-
-      val row = Map(
-        "created" -> s"$currentTime",
-        "url" -> url,
-        "country" -> country,
-        "browser" -> browser
-      )
-
-      println(write(row))
-
-      currentTime += 1
-    }
-  }
-
-  genFakeData(100)
-}
+{%highlight scala %}
+// url, status code, country, browser, user id
+http://www.example.com/id=1 200 US  CH  723679
 {%endhighlight%}
+
