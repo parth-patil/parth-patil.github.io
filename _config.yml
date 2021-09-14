@@ -1,5 +1,5 @@
 title:        "Parth's Blog"
-tagline:      'My Tagline'
+tagline:      "Parth's Blog"
 description:  'About Programming etc ..'
 url:          http://parthpatil.com
 home:         '/'
@@ -10,4 +10,5 @@ author:
 markdown:     rdiscount
 permalink:    pretty
 highlighter:  pygments 
+plugins: [jekyll-paginate]
 paginate:     2
