@@ -192,7 +192,7 @@
             <li>Rewrote the aging PHP based reporting API for SU Ads using Scala & Spray</li>
             <li>The reporting data is stored in HBase</li>
           </ul>
-          <h4>    Payment gateway migration from PayPal to Stripe :  </h4>
+          <h4>Payment gateway migration from PayPal to Stripe :  </h4>
           <ul>
             <li>Moved the whole payment infrastructure from PayPal to Stripe</li>
             <li>Achieved zero downtime migration in a short time.</li>
@@ -203,7 +203,7 @@
           <div class="meta">
           <div class="upper-row">
           <h3>  
-            Senior Software Engineer  
+            Principal Staff Engineer
 
           </h3>
           <div class="time">April 2013 - May 2014</div>
@@ -216,12 +216,6 @@
             <li>Currently working on building an advanced analytics platform using Hadoop 2.2, Impala (with Parquet) and HBase (with Phoenix)</li>
             <li>The platform allows our customers to provide advanced queries through our user friendly query language. These queries are run periodically and reports and graphs are generated for the customer to view.</li>
           </ul>
-          <h4>Recommendation Engine for SUN (StumbleUpon Network) :</h4>
-            <ul>
-              <li>Designed and implemented the recommendation service in Scala & Twitter Finagle</li>
-              <li>Achieved extremely low latencies (under 3ms for P95)</li>
-              <li>Came up with a nifty way to store what users have already seen. (Details in my blog article http://parthpatil.com/2015/06/18/optimizing-dedup-cache-using-bloom-filters/)</li>
-            </ul>
           <h4>Smart Message sender :          </h4>
           <ul>
             <li>Scala and Akka actors which can scale to several thousand msg/sec.</li>
@@ -230,82 +224,6 @@
           </ul>
         </div>
       </div>
-      <div class="item">
-        <div class="meta">
-        <div class="upper-row">
-        <h3>  
-          Senior Software Engineer
-        </h3>
-        <div class="time">2017 - 2013</div>
-        </div>
-        <div class="company">StumbleUpon inc, San Francisco</div>
-        </div>
-        <div class="details">
-        <h4>Ad Server :          </h4>
-        <ul>
-          <li>Worked in a team of 3 developers to design and implement an ad server platform from scratch written in scala and built using finagle and scala actors.</li>
-          <li>I was responsible for implementing the data service part of the ad server whose job it is to fetch the data needed by ad server to serve ads.</li>
-          <li>The data service does its job by employing several actors that work in parallel.</li>
-          <li>Data is fetched from various sources (kafka, log files, Mysql, HBase), transformed and then loaded into Redis where it can be used by the ad server.</li>
-
-          </ul>
-          <h4>Advanced Analytics Platform for AdSystem :
-          </h4>
-          <ul>
-            <li>Designsed and implemented an advanced analytics solution that is used by ad system customers.</li>
-            <li>The reporting system allows for flexible grouping and filtering of massive amounts of data in real time.</li>
-            <li>The persistent store for the reporting system is HBase.</li>
-            <li>The report data is generated via a Map-Reduce job written in Pig.</li>
-            <li>The report data is queried through a PHP library that talks to HBase over Thrift.</li>
-
-          </ul>
-          <h4>Recommendation Engine for SUN (StumbleUpon Network) :
-          </h4>
-          <ul>
-            <li>>Designed and implemented the recommendation service in Scala & Twitter Finagle</li>
-            <li>Achieved extremely low latencies (under 3ms for P95)</li>
-            <li>Came up with a nifty way to store what users have already seen. (Details in my
-            blog article: http://parthpatil.com/2015/06/18/optimizing-dedup-cache-using-bloom-filters/)</li>
-          </ul>
-          <h4>Reporting API Service:
-          </h4>
-          <ul>
-            <li>Rewrote the aging PHP based reporting API for SU Ads using Scala & Spray</li>
-            <li>The reporting data is stored in HBase</li>
-          </ul>
-          <h4>Payment gateway migration from PayPal to Stripe :
-          </h4>
-          <ul>
-            <li>EMoved the whole payment infrastructure from PayPal to Stripe </li>
-            <li>EAchieved zero downtime migration in a short time.   </li>
-          </ul>
-        </div>
-      </div>
-      <div class="item">
-        <div class="meta">
-          <div class="upper-row">
-            <h3>  
-              Principal Staff Engineer
-            </h3>
-            <div class="time">April 2013 - May 2014</div>
-          </div>
-            <div class="company">Badgeville inc, Redwood City</div>
-          </div>
-          <div class="details">
-            <h4>Analytics Platform :         </h4>
-            <ul>
-              <li>Worked on building an advanced analytics platform using Hadoop 2.2, Impala (with Parquet) and HBase (with Phoenix)</li>
-              <li>The platform allows our customers to provide advanced queries through our user friendly query language. These queries are run periodically and reports and graphs are  generated for the customer to view.</li>
-            </ul>
-            <h4>Smart Message sender :
-            </h4>
-            <ul>
-              <li>Single handedly architected and implemented a smart message delivery system inmScala and Akka actors which can scale to several thousand msg/sec.</li>
-              <li>It's a distributed and fault tolerant system that consumes messages from Kafka queue and delivers the messages to remote endpoints with a flexible and configurable retry policy.</li>
-              <li>Uses Redis queue with server side Lua scripting to implement retry policy for smessages that could not be delivered due to customer end point being down or slow.</li>
-            </ul>
-          </div>
-        </div>
         <div class="item">
           <div class="meta">
             <div class="upper-row">
@@ -443,7 +361,7 @@
           <div class="meta">
             <div class="upper-row">
               <h3>  
-                Senior Software Engineer
+                Backend Software Engineer
               </h3>
               <div class="time">2005 - 2007</div>
             </div>
@@ -482,7 +400,7 @@
           <div class="meta">
             <div class="upper-row">
               <h3>  
-                Senior Software Engineer
+                Software Engineer
               </h3>
               <div class="time">2004 - 2005</div>
             </div>
@@ -501,13 +419,6 @@
               <li>Designed and developed the clustering tool in Perl.</li>
               <li>Implemented a Spell Check and Offensive-Keyword filtering algorithm using Standard English dictionary and Custom dictionaries.</li>
               <li>Implemented a Clustering Engine to filter keywords based on Syntactic Rules specified as Regular Expressions by the user.</li>
-            </ul>
-            <h4>Domain Name Ranking (DNR) Tool:        </h4>
-            <ul>
-              <li>Developed the DNR Tool in Perl.</li>
-              <li>Implemented a Domain Ranking Algorithm for prioritizing the domain registration process.</li>
-              <li>Implemented a Similarity Ranking Algorithm(n-gram) to filter out domains having trademark names.</li>
-              <li>Implemented a Fuzzy Logic Engine to capture the expert knowledge in choosing good domains.</li>
             </ul>
             <h4>Performance Monitoring and Alert System:     </h4>
             <ul>
